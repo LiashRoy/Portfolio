@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liash Roy | Portfolio</title>
+    <meta name="theme-color" content="#080810">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #080810;
+            --bg-card: #0f1219;
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --accent: #06b6d4;
+            --accent-glow: rgba(6,182,212,0.15);
+        }
+        html { scroll-behavior: auto; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        /* ===== SCROLL SPACER ===== */
+        .scroll-spacer { height: calc(8900px + 100vh); pointer-events: none; }
+        .scroll-spacer { height: calc(8200px + 100vh); pointer-events: none; }
+        /* ===== SCROLL SPACER ===== */
+        .scroll-spacer { height: calc(12500px + 100vh); pointer-events: none; }
+
+        /* ===== WAVE CANVAS ===== */
+        #wave-canvas {
+            position: fixed; inset: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ===== VIEWPORT ===== */
+        .viewport {
+            position: fixed; inset: 0;
+            z-index: 2; overflow: hidden;
+        }
+
+        /* Mouse-following glow */
+        .viewport::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(650px circle at var(--mx, 50%) var(--my, 50%),
+                rgba(6,182,212,0.05), transparent 40%);
+            pointer-events: none;
+            z-index: 0;
+            transition: background 0.15s ease;
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden;
+            will-change: opacity, transform;
+            z-index: 1;
+        }
+
+        /* ===== SCROLL HINT ===== */
+        .scroll-hint {
+            position: fixed; bottom: 36px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 100; text-align: center;
+            transition: opacity 0.6s;
+        }
+        .scroll-hint-text {
+            display: block; font-size: 10px;
+            letter-spacing: 3px; text-transform: uppercase;
+            color: var(--text-muted); margin-bottom: 12px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .scroll-mouse {
+            width: 22px; height: 34px;
+            border: 1.5px solid var(--text-muted);
+            border-radius: 11px; margin: 0 auto; position: relative;
+        }
+        .scroll-mouse::before {
+            content: ''; position: absolute; top: 7px; left: 50%;
+            transform: translateX(-50%);
+            width: 3px; height: 7px;
+            background: var(--accent); border-radius: 2px;
+            animation: scrollWheel 2s ease-in-out infinite;
+        }
+        @keyframes scrollWheel {
+            0%, 100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+            60% { transform: translateX(-50%) translateY(10px); opacity: 0.2; }
+        }
+
+        /* ======================================================= */
+        /* ===== SECTION 1 : LAPTOP (TOP-DOWN VIEW) ===== */
+        /* ======================================================= */
+        .laptop-scene {
+            perspective: 1200px;
+            perspective-origin: 50% 50%;
+            position: relative;
+            transform: scale(0.88) translateY(18vh);
+            will-change: transform;
+        }
+
+        .laptop-container {
+            transform-style: preserve-3d;
+            transform: rotateX(55deg);
+            position: relative;
+            width: 780px;
+            height: 500px;
+            will-change: transform;
+        }
+        }
+
+        /* Aluminum texture overlay for realism */
+        .alu-texture {
+            position: absolute; inset: 0;
+            opacity: 0.45;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            border-radius: inherit; pointer-events: none; mix-blend-mode: overlay;
+        }
+
+        /* --- Keyboard / Base (underneath the lid) --- */
+        .laptop-base-plate {
+            position: absolute; inset: 0;
+            transform-style: preserve-3d;
+            border-radius: 16px;
+        }
+        .base-layer {
+            position: absolute; inset: 0;
+            background: #121214; /* edge color */
+            border-radius: 16px;
+            box-shadow: inset 0 0 0 1px #050505;
+        }
+        .base-top {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, #2b2b2f 0%, #1e1e22 30%, #18181b 70%, #121214 100%);
+            border-radius: 16px;
+            box-shadow: inset 0 0 24px rgba(0,0,0,1);
+            transform: translateZ(1px);
+            transform-style: preserve-3d;
+        }
+        
+        .hinge {
+            position: absolute; top: -1px; left: 16%; width: 68%; height: 22px;
+            background: linear-gradient(180deg, #0f0f12, #050505);
+            border-radius: 0 0 8px 8px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -4px 8px rgba(0,0,0,0.8);
+            z-index: 1;
+            transform: translateZ(0px);
+        }
+        .speaker-grill {
+            position: absolute; top: 15%; width: 5%; height: 65%;
+            background-image: radial-gradient(#111 40%, transparent 40%);
+            background-size: 4px 4px;
+            opacity: 0.6;
+        }
+        .speaker-left { left: 3%; }
+        .speaker-right { right: 3%; }
+        
+        .kb-glow {
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 50% 30%, rgba(6,182,212,0.25), transparent 50%);
+            border-radius: 16px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 3;
+        }
+        .keyboard-keys {
+            position: absolute;
+            top: 10%; left: 10%; width: 80%; height: 46%;
+        /* --- Lid (silver back, covers keyboard when closed) --- */
+        .laptop-lid {
+            position: absolute; inset: 0;
+            transform-origin: center top;
+            transform-style: preserve-3d;
+            transform: rotateX(0deg) translateZ(4px); /* raise slightly above base when closed */
+            z-index: 10;
+            will-change: transform;
+        }
+        .key {
+            flex: 1; background: #1a1a1c;
+            border-radius: 4px; border: 1px solid #0a0a0a; border-bottom: 2px solid #050505;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.07), 0 3px 4px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .key::after { /* fake key lettering */
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30%; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px;
+        }
+        .key.space { flex: 5.5; }
+        .key.space::after { display: none; }
+        
+        .trackpad-el {
+            position: absolute; bottom: 5%; left: 50%;
+        .laptop-lid {
+            position: absolute; inset: 0;
+            transform-origin: center top;
+            transform-style: preserve-3d;
+            transform: rotateX(0deg) translateZ(8px); /* firmly above keyboard when closed */
+            z-index: 100;
+            will-change: transform;
+        }
+        /* --- Lid (silver back, covers keyboard when closed) --- */
+        .laptop-lid {
+            position: absolute; inset: 0;
+            transform-origin: center top;
+        .lid-front, .lid-back {
+            position: absolute; inset: 0;
+            border-radius: 16px;
+        }
+        .lid-front {
+            background: linear-gradient(180deg, #3a3a3f 0%, #2a2a2e 25%, #222225 50%, #2a2a2e 75%, #303035 100%);
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.06),
+                inset 0 1px 0 rgba(255,255,255,0.2),
+                inset 0 -1px 0 rgba(0,0,0,0.8),
+                0 16px 50px rgba(0,0,0,0.8);
+            transform: translateZ(2px); /* ensure it's firmly on top */
+            z-index: 5;
+        }
+        /* Subtle logo on lid */
+        .lid-front::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 44px; height: 52px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            background: rgba(255,255,255,0.15); box-shadow: 0 0 24px rgba(255,255,255,0.06);
+        }
+        /* Reflection highlight */
+        .lid-front::before {
+            content: ''; position: absolute; top: 0; left: 8%; right: 8%; height: 45%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.06), transparent);
+            border-radius: 16px 16px 0 0; pointer-events: none;
+        }
+
+        .lid-back {
+            background: #0a0a0a;
+            transform: rotateX(180deg) translateZ(8px); /* push to bottom of lid stack */
+            border: 2px solid #000;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+            border-radius: 16px;
+        }
+            border-radius: 16px;
+        }
+        .camera-lens {
+            position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+            width: 8px; height: 8px; background: #050505; border-radius: 50%;
+            border: 1px solid #111; box-shadow: inset 0 0 3px rgba(255,255,255,0.2);
+            z-index: 20;
+        }
+            width: 2.5px; height: 2.5px; background: rgba(6,182,212,0.7); border-radius: 50%;
+        }
+        .lid-screen-display {
+            width: 97.5%; height: 94%;
+            background: #030303;
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 24px rgba(0,0,0,1);
+        }
+
+        /* Shadow on the desk */
+        .laptop-floor-shadow {
+            width: 700px; height: 34px;
+            margin: 18px auto 0;
+            background: radial-gradient(ellipse, rgba(0,0,0,0.6) 0%, transparent 70%);
+            filter: blur(20px);
+            transition: opacity 0.3s;
+        }
+
+        /* --- Screen overlay (inside the 3D screen) --- */
+        .screen-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center;
+            opacity: 0;
+            z-index: 10;
+        }
+        .screen-overlay .greeting {
+            display: block; font-size: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            letter-spacing: 5px; text-transform: uppercase;
+            margin-bottom: 20px;
+            opacity: 0; transform: translateY(10px);
+            transition: opacity 0.6s 0.1s, transform 0.6s 0.1s;
+        }
+        .screen-overlay.visible .greeting { opacity: 1; transform: translateY(0); }
+
+        .screen-overlay h1 {
+            font-size: 80px; font-weight: 900;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #fff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            opacity: 0; transform: translateY(14px);
+            transition: opacity 0.6s 0.2s, transform 0.6s 0.2s;
+        }
+        .screen-overlay.visible h1 { opacity: 1; transform: translateY(0); }
+
+        .screen-overlay .tagline {
+            font-size: 20px; color: var(--text-muted);
+            margin-bottom: 44px; letter-spacing: 2px;
+            opacity: 0; transform: translateY(10px);
+            transition: opacity 0.6s 0.3s, transform 0.6s 0.3s;
+        }
+        .screen-overlay.visible .tagline { opacity: 1; transform: translateY(0); }
+
+        .social-links {
+            display: flex; gap: 18px; justify-content: center;
+            opacity: 0; transform: translateY(10px);
+            transition: opacity 0.6s 0.4s, transform 0.6s 0.4s;
+        }
+        .screen-overlay.visible .social-links { opacity: 1; transform: translateY(0); }
+
+        .social-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 14px 30px;
+            border: 1px solid rgba(6,182,212,0.35);
+            color: var(--accent); text-decoration: none;
+            font-size: 14px; font-family: 'JetBrains Mono', monospace;
+            border-radius: 8px; transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+        .social-btn:hover {
+            background: var(--accent); color: var(--bg);
+            box-shadow: 0 0 28px var(--accent-glow);
+        }
+        .social-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+        /* ===== SECTION 2: PROJECTS ===== */
+        .section-header {
+            position: absolute; top: 55px; left: 60px; z-index: 2;
+        }
+        .section-number {
+            display: block; font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent); letter-spacing: 3px; margin-bottom: 8px;
+        }
+        .section-header h2 { font-size: 38px; font-weight: 800; letter-spacing: -1px; }
+
+        .projects-viewport {
+            width: 100%; max-width: 550px;
+            height: 400px; position: relative; overflow: visible;
+        }
+        .project-card {
+            position: absolute; width: 100%; height: 100%;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px; overflow: hidden;
+            cursor: pointer; will-change: transform, opacity, filter;
+            transition: box-shadow 0.3s;
+        }
+        .project-card:hover { box-shadow: 0 0 50px rgba(6,182,212,0.08); }
+        .project-image { height: 52%; position: relative; }
+        .project-image::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+            height: 60px; background: linear-gradient(transparent, var(--bg-card));
+        }
+        .project-info { padding: 18px 26px; }
+        .project-info .proj-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; color: var(--accent); letter-spacing: 2px;
+        }
+        .project-info h3 { font-size: 20px; font-weight: 700; margin: 6px 0 8px; }
+        .project-info p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; }
+        .project-tech { display: flex; gap: 8px; flex-wrap: wrap; }
+        .project-tech span {
+            font-size: 10px; font-family: 'JetBrains Mono', monospace;
+            color: var(--accent); background: var(--accent-glow);
+            padding: 3px 10px; border-radius: 4px; letter-spacing: 0.5px;
+        }
+        .project-indicators {
+            position: absolute; bottom: 48px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; gap: 10px;
+        }
+        .indicator {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: rgba(255,255,255,0.12); transition: all 0.4s;
+        }
+        .indicator.active {
+            background: var(--accent);
+            box-shadow: 0 0 12px var(--accent-glow);
+            width: 26px; border-radius: 4px;
+        }
+
+        /* ===== SECTION 2.5: GITHUB ===== */
+        .github-viewport {
+            width: 100%; max-width: 550px;
+            height: 280px; position: relative; overflow: visible;
+        }
+        .repo-card {
+            position: absolute; width: 100%; height: 100%;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px; padding: 32px;
+            will-change: transform, opacity, filter;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column; text-align: left;
+        }
+        .repo-title { 
+            font-size: 22px; font-weight: 700; color: #58a6ff; 
+            margin-bottom: 12px; display: flex; align-items: center; gap: 12px;
+        }
+        .repo-title svg { fill: currentColor; width: 22px; height: 22px; }
+        .repo-desc { 
+            color: var(--text-muted); font-size: 15px; 
+            line-height: 1.6; flex-grow: 1; 
+        }
+        .repo-stats { 
+            display: flex; gap: 20px; font-size: 13px; color: #8b949e; 
+            margin-top: 20px; font-family: 'JetBrains Mono', monospace; 
+            align-items: center;
+        }
+        .repo-stats span { display: flex; align-items: center; gap: 6px; }
+        .repo-stats svg { width: 14px; height: 14px; fill: currentColor; }
+        .lang-color { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+        .github-contributions {
+            position: absolute;
+            bottom: 8%;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+        .github-contributions p {
+            font-size: 13px;
+            font-family: 'JetBrains Mono', monospace;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .github-contributions img {
+            width: 100%;
+            filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.1);
+            opacity: 0.85;
+            pointer-events: none;
+        }
+
+        /* ===== SECTION 3: EDUCATION ===== */
+        .education-timeline {
+            border-radius: 8px; transition: all 0.3s; letter-spacing: 1px;
+        }
+        .contact-btn:hover {
+            background: var(--accent); color: var(--bg);
+            box-shadow: 0 0 35px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+        .contact-links {
+            margin-top: 44px; display: flex; gap: 32px; justify-content: center;
+        }
+        .contact-links a {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 12px; font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 2px; text-transform: uppercase; transition: color 0.3s;
+        }
+        .contact-links a:hover { color: var(--accent); }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(12px);
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            z-index: 300;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.4s, visibility 0.4s;
+        }
+        .modal-overlay.open { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            width: 95%; max-width: 1000px; height: 85vh;
+            overflow: hidden; position: relative;
+            transform: scale(0.92) translateY(24px);
+            transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+            display: flex; flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+        .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
+        .modal-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex; justify-content: space-between; align-items: center;
+            background: #0f1219;
+            z-index: 2;
+        }
+        .modal-header h2 { font-size: 20px; font-weight: 700; margin: 0; }
+        .modal-close {
+            width: 32px; height: 32px; border: none;
+            background: rgba(255,255,255,0.06);
+            color: var(--text); font-size: 18px;
+            border-radius: 50%; cursor: pointer;
+            transition: background 0.3s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+        .modal-pdf-container {
+            flex-grow: 1; position: relative; background: #333;
+        }
+        .modal-pdf-container iframe {
+            width: 100%; height: 100%; border: none; display: block;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        </section>
+        }
+        @media (max-width: 480px) {
+            .laptop-container { width: 300px; height: 200px; }
+            .screen-overlay h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== WAVE BACKGROUND CANVAS ===== -->
+    <canvas id="wave-canvas"></canvas>
+        <!-- ===== SECTION 1 : LAPTOP ===== -->
+        <section class="section section-laptop" id="sec-laptop">
+            <div class="laptop-scene">
+                <div class="laptop-container">
+        .modal-close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+        .modal-pdf-container {
+        <!-- ===== SECTION 1 : LAPTOP ===== -->
+        <section class="section section-laptop" id="sec-laptop">
+            <div class="laptop-scene">
+                <div class="laptop-container">
+                    <div class="laptop-base-plate">
+                        <div class="kb-glow" id="kb-glow"></div>
+                        <div class="keyboard-keys" id="keyboard-keys"></div>
+                        <div class="trackpad-el"></div>
+        <!-- ===== SECTION 1 : LAPTOP ===== -->
+        <section class="section section-laptop" id="sec-laptop">
+            <div class="laptop-scene">
+                <div class="laptop-container">
+                    <div class="laptop-base-plate">
+                        <div class="alu-texture"></div>
+                        <div class="hinge"></div>
+                        <div class="speaker-grill speaker-left"></div>
+                        <div class="speaker-grill speaker-right"></div>
+                        <div class="kb-glow" id="kb-glow"></div>
+                        <div class="keyboard-keys" id="keyboard-keys"></div>
+                        <div class="trackpad-el"></div>
+                                <div class="screen-overlay" id="screen-overlay">
+                                    <span class="greeting">Hello, I'm</span>
+                                    <h1>Liash Roy</h1>
+                                    <div class="social-links">
+                            <div class="lid-screen-display">
+                                <div class="screen-overlay" id="screen-overlay">
+                                    <span class="greeting">Hello, I'm</span>
+                                    <h1>Liash Roy</h1>
+                                    <p class="tagline">Software Developer</p>
+                                    <div class="social-links">
+                                        <a href="#" class="social-btn" target="_blank" rel="noopener">
+                                            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.31-5.47-1.34-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.4s2.05.14 3.01.4c2.29-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                                            <span>GitHub</span>
+                                        </a>
+                                        <a href="#" class="social-btn" target="_blank" rel="noopener">
+                                            <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43c-1.14 0-2.06-.93-2.06-2.07 0-1.13.92-2.06 2.06-2.06 1.14 0 2.07.93 2.07 2.06 0 1.14-.93 2.07-2.07 2.07zm1.78 13.02H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0h.01z"/></svg>
+                                            <span>LinkedIn</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="laptop-floor-shadow" id="laptop-shadow"></div>
+            </div>
+        </section>
+        <!-- ===== SECTION 3 : EDUCATION ===== -->
+                                    <div class="social-links">
+                                        <a href="https://github.com/LiashRoy" class="social-btn" target="_blank" rel="noopener">
+                                            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.31-5.47-1.34-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.4s2.05.14 3.01.4c2.29-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                                            <span>GitHub</span>
+                                        </a>
+                                        <a href="https://linkedin.com/in/liashroy/" class="social-btn" target="_blank" rel="noopener">
+                                            <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43c-1.14 0-2.06-.93-2.06-2.07 0-1.13.92-2.06 2.06-2.06 1.14 0 2.07.93 2.07 2.06 0 1.14-.93 2.07-2.07 2.07zm1.78 13.02H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0h.01z"/></svg>
+                                            <span>LinkedIn</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="laptop-floor-shadow" id="laptop-shadow"></div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION 2 : PROJECTS ===== -->
+        <section class="section section-projects" id="sec-projects">
+            <div class="section-header">
+                <h2>Projects</h2>
+            </div>
+            <div class="projects-viewport" id="projects-viewport"></div>
+            <div class="project-indicators" id="project-indicators"></div>
+        </section>
+
+        <!-- ===== SECTION 3 : GITHUB ===== -->
+        <section class="section section-github" id="sec-github">
+            <div class="section-header">
+                <h2>GitHub Repos</h2>
+            </div>
+            <div class="github-viewport" id="github-viewport"></div>
+        </section>
+
+        <!-- ===== SECTION 4 : EDUCATION ===== -->
+        <section class="section section-education" id="sec-education">
+            <div class="section-header">
+                <h2>Education</h2>
+            </div>
+            <div class="education-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">2020 — 2024</div>
+                    <div class="timeline-content">
+                        <h3>University Name</h3>
+        <!-- ===== SECTION 3 : GITHUB ===== -->
+        <section class="section section-github" id="sec-github">
+            <div class="section-header">
+                <h2>GitHub Repos</h2>
+            </div>
+            <div class="github-viewport" id="github-viewport"></div>
+            
+            <div class="github-contributions">
+                <p>Live Contributions</p>
+                <img src="https://ghchart.rshah.org/LiashRoy" alt="LiashRoy's Live GitHub Contributions">
+            </div>
+        </section>
+
+        <!-- ===== SECTION 4 : EDUCATION ===== -->
+                    <div class="timeline-content">
+                        <h3>Secondary School</h3>
+                        <p>General Education — CBSE Curriculum</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION 5 : CONTACT ===== -->
+        <section class="section section-contact" id="sec-contact">
+            <div class="section-header">
+                <h2>Get In Touch</h2>
+            </div>
+            <div class="contact-content">
+                <p class="contact-text">
+                    I'm currently looking for new opportunities. Whether you have a
+                    question or just want to say hi, feel free to reach out!
+                </p>
+                <a href="mailto:hello@example.com" class="contact-btn">Say Hello →</a>
+                <div class="contact-links">
+                    <a href="https://github.com/LiashRoy" target="_blank" rel="noopener">GitHub</a>
+                    <a href="https://linkedin.com/in/liashroy/" target="_blank" rel="noopener">LinkedIn</a>
+                    <a href="mailto:hello@example.com">Email</a>
+                </div>
+            </div>
+            <div class="section-header">
+                <span class="section-number">05</span>
+                <h2>Get In Touch</h2>
+            </div>
+                    I'm currently looking for new opportunities. Whether you have a
+                    question or just want to say hi, feel free to reach out!
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content pdf-modal">
+            <div class="modal-header">
+                <h2 id="modal-title">Project Title</h2>
+                <button class="modal-close" id="modal-close">&#x2715;</button>
+            </div>
+            <div class="modal-pdf-container" id="modal-pdf-container">
+                <iframe id="modal-pdf-iframe" src=""></iframe>
+            </div>
+            <div class="modal-repo-container" id="modal-repo-container" style="display: none; padding: 40px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <p id="modal-repo-desc" style="font-size: 18px; color: var(--text-muted); line-height: 1.6; max-width: 600px; margin-bottom: 40px;"></p>
+                <div class="modal-actions" style="display: flex; gap: 20px;">
+                    <a id="modal-repo-live" href="#" target="_blank" style="padding: 12px 24px; background: var(--accent); color: #000; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.3s;">View Live Site</a>
+                    <a id="modal-repo-github" href="#" target="_blank" style="padding: 12px 24px; background: rgba(255,255,255,0.1); color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; transition: background 0.3s;">View Source Code</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">&#x2715;</button>
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content pdf-modal">
+            <div class="modal-header">
+                <h2 id="modal-title">Project Title</h2>
+                <button class="modal-close" id="modal-close">&#x2715;</button>
+            </div>
+            <div class="modal-pdf-container">
+                <iframe id="modal-pdf-iframe" src=""></iframe>
+            </div>
+        </div>
+            <div class="modal-repo-container" id="modal-repo-container" style="display: none; padding: 40px; text-align: center; flex-grow: 1; flex-direction: column; justify-content: center; align-items: center;">
+                <img id="modal-repo-img" src="" alt="App Preview" style="width: 100%; max-width: 500px; height: 260px; object-fit: cover; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); background: #1a1a1d; border: 1px solid rgba(255,255,255,0.1);">
+                <p id="modal-repo-desc" style="font-size: 16px; color: var(--text-muted); line-height: 1.6; max-width: 500px; margin-top: 0; margin-bottom: 30px;"></p>
+                <div class="modal-actions" style="display: flex; gap: 16px; width: 100%; max-width: 400px; justify-content: center;">
+                    <a id="modal-repo-live" href="#" target="_blank" style="flex: 1; padding: 14px 0; background: var(--accent); color: #000; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.3s; text-align: center;">View Live Site</a>
+                    <a id="modal-repo-github" href="#" target="_blank" style="flex: 1; padding: 14px 0; background: rgba(255,255,255,0.1); color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; transition: background 0.3s; text-align: center;">Source Code</a>
+                </div>
+            </div>
+                row.className = 'key-row';
+                if (count === null) {
+                    for (let i = 0; i < 3; i++) row.appendChild(mk());
+                    const sp = mk(); sp.classList.add('space'); row.appendChild(sp);
+                    for (let i = 0; i < 3; i++) row.appendChild(mk());
+                } else {
+                    for (let i = 0; i < count; i++) row.appendChild(mk());
+                }
+                area.appendChild(row);
+            });
+            function mk() { const d = document.createElement('div'); d.className = 'key'; return d; }
+        })();
+        let waveT = 0;
+        function drawBackground() {
+            ctx.clearRect(0, 0, cW, cH);
+
+            // Waves
+            waveConfig.forEach(w => {
+                ctx.beginPath();
+                ctx.moveTo(0, cH);
+                for (let x = 0; x <= cW + 45; x += 45) {
+                    const y = cH * w.y
+                        + Math.sin(x * w.freq + waveT * w.speed * 0.012) * w.amp
+                        + Math.sin(x * w.freq * 1.6 + waveT * w.speed * 0.018 + 1) * w.amp * 0.4;
+                    ctx.lineTo(x, y);
+                }
+                ctx.lineTo(cW, cH);
+                ctx.closePath();
+                ctx.fillStyle = w.color;
+                ctx.fill();
+            });
+
+            // Particles
+            particles.forEach(p => { p.update(); p.draw(); });
+
+            waveT++;
+            requestAnimationFrame(drawBackground);
+        }
+            document.body.style.overflow = 'hidden';
+        }
+        function closeModal() { modalOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+        $('modal-close').addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', e => { if (e.target===modalOverlay) closeModal(); });
+        document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
+
+        // =============== HELPERS ===============
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                // Screen overlay (name/links) fade in
+                const cp = prog(lp, 0.62, 0.82);
+                screenOverlay.style.opacity = cp;
+                screenOverlay.style.pointerEvents = cp > 0.5 ? 'auto' : 'none';
+                if (cp > 0.01) screenOverlay.classList.add('visible');
+                else screenOverlay.classList.remove('visible');
+        function drawBackground() {
+            ctx.clearRect(0, 0, cW, cH);
+
+            // Waves
+            waveConfig.forEach(w => {
+                ctx.beginPath();
+                ctx.moveTo(0, cH);
+                for (let x = 0; x <= cW; x += 3) {
+                    const y = cH * w.y
+                        + Math.sin(x * w.freq + waveT * w.speed * 0.012) * w.amp
+                        + Math.sin(x * w.freq * 1.6 + waveT * w.speed * 0.018 + 1) * w.amp * 0.4;
+                    ctx.lineTo(x, y);
+                }
+                ctx.lineTo(cW, cH);
+        // =============== CONFIGURATION ===============
+        const PHASES = {
+            LAPTOP:     { start: 0,    end: 1800 },
+            FADE_1:     { start: 2500, end: 3100 },
+            PROJECTS:   { start: 3100, end: 6100 },
+            FADE_GH:    { start: 6100, end: 6700 },
+            GITHUB:     { start: 6700, end: 9700 },
+            FADE_2:     { start: 9700, end: 10300 },
+            EDUCATION:  { start: 10300, end: 11300 },
+            FADE_3:     { start: 11300, end: 11900 },
+        const PROJECTS = [
+            { title:'Project Alpha',   desc:'A full-stack web app with real-time collaboration features.',
+              pdf:'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+              tech:['React','Node.js','Socket.io','MongoDB'], grad:'linear-gradient(135deg,#667eea,#764ba2)' },
+        const TOTAL = 12500;
+        const NUM_PROJECTS = 5;
+        const PROJECTS = [
+        let REPOS = [];
+        let repoCards = [];
+        async function loadGithubRepos() {
+            const vp = $('github-viewport');
+            try {
+                // Fetch pinned repos via public egoist API
+                const pRes = await fetch('https://gh-pinned-repos.egoist.dev/?username=LiashRoy');
+                let pinnedData = [];
+                if (pRes.ok) pinnedData = await pRes.json();
+                else {
+                    // Fallback to recent if pinned API fails
+                    const fbRes = await fetch('https://api.github.com/users/LiashRoy/repos?sort=updated&per_page=6');
+                    const fbData = await fbRes.json();
+                    pinnedData = fbData.map(r => ({ repo: r.name }));
+                }
+
+                // Fetch full details from GitHub to get homepage (live link)
+                const fullData = await Promise.all(pinnedData.map(async (p) => {
+                    try {
+                        const r = await fetch(`https://api.github.com/repos/LiashRoy/${p.repo}`).then(res=>res.json());
+                        return {
+                            name: r.name,
+                            desc: r.description || 'No description provided.',
+                            lang: r.language || 'Unknown',
+                            color: '#58a6ff',
+                            stars: r.stargazers_count || 0,
+                            forks: r.forks_count || 0,
+                            url: r.html_url,
+                            liveUrl: r.homepage || ''
+                        };
+                    } catch(e) { return null; }
+                }));
+
+                REPOS = fullData.filter(r => r !== null);
+                
+        // =============== DOM ===============
+        const $ = id => document.getElementById(id);
+        let REPOS = [];
+        let repoCards = [];
+        async function loadGithubRepos() {
+            const vp = $('github-viewport');
+            try {
+                let pinnedData = [];
+                try {
+                    // Primary: egoist pinned repos API
+                    const pRes = await fetch('https://gh-pinned-repos.egoist.dev/?username=LiashRoy');
+                    if (pRes.ok) pinnedData = await pRes.json();
+                    else throw new Error('Primary API not ok');
+                } catch(err) {
+                    try {
+                        // Secondary: pinned.github.io API
+                        const pRes2 = await fetch('https://pinned.github.io/api/user/LiashRoy');
+                        if (pRes2.ok) pinnedData = await pRes2.json();
+                        else throw new Error('Secondary API not ok');
+                    } catch(err2) {
+                        console.warn("Pinned APIs failed, using exact fallback order:", err2);
+                        // Hardcoded fallback exactly matching user's pinned dashboard order
+                        pinnedData = [
+                            {repo: 'whitequest-credflow'}, {repo: 'tranchechain'}, {repo: 'yt-music-sorter'},
+                            {repo: 'cred-fintech-clone'}, {repo: 'Vivo-MRA-Dashboard-'}
+                        ];
+                    }
+                }
+
+                // Fetch full details from GitHub to get homepage (live link)
+                const fullData = await Promise.all(pinnedData.map(async (p) => {
+                    try {
+                        const res = await fetch(`https://api.github.com/repos/LiashRoy/${p.repo || p.name}`);
+                        if(!res.ok) throw new Error('Rate limit');
+                        const r = await res.json();
+                        return {
+                            name: r.name,
+                            desc: r.description || 'No description provided.',
+                            lang: r.language || 'Unknown',
+                            color: '#58a6ff',
+                            stars: r.stargazers_count || 0,
+                            forks: r.forks_count || 0,
+                            url: r.html_url,
+                            liveUrl: r.homepage || ''
+                        };
+                    } catch(e) { 
+                        // Ultimate hardcoded fallback per repo if GitHub API is totally blocked/rate-limited
+                        return { name: p.repo || p.name, desc: 'A LiashRoy repository.', lang: 'JavaScript', color: '#58a6ff', stars: 0, forks: 0, url: `https://github.com/LiashRoy/${p.repo || p.name}`, liveUrl: '' }; 
+                    }
+                }));
+
+                REPOS = fullData;
+                
+                REPOS.forEach((r, i) => {
+                    const c = document.createElement('div');
+                    c.className = 'repo-card';
+                    c.style.cursor = 'pointer';
+                    c.innerHTML = `
+                        <div class="repo-title">
+                            <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
+                            ${r.name}
+                        </div>
+                        <div class="repo-desc">${r.desc}</div>
+                        <div class="repo-stats">
+                            <span><i class="lang-color" style="background:${r.color}"></i> ${r.lang}</span>
+                            <span><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path></svg> ${r.stars}</span>
+                            <span><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path></svg> ${r.forks}</span>
+                        </div>`;
+                    c.addEventListener('click', () => openRepoModal(i));
+                    vp.appendChild(c); repoCards.push(c);
+                });
+            } catch(e) { console.error("Total failure fetching repos", e); }
+        }
+                        return {
+                            name: r.name,
+                            desc: r.description || 'No description provided.',
+                            lang: r.language || 'Unknown',
+                            color: '#58a6ff',
+                            stars: r.stargazers_count || 0,
+                            forks: r.forks_count || 0,
+                            url: r.html_url,
+                            liveUrl: r.homepage || ''
+                        };
+                    } catch(e) { 
+                        // Ultimate hardcoded fallback per repo if GitHub API is totally blocked/rate-limited
+                        return { name: p.repo, desc: 'A LiashRoy repository.', lang: 'JavaScript', color: '#58a6ff', stars: 0, forks: 0, url: `https://github.com/LiashRoy/${p.repo}`, liveUrl: '' }; 
+                    }
+                }));
+
+                REPOS = fullData;
+                
+                REPOS.forEach((r, i) => {
+                    const c = document.createElement('div');
+                    c.className = 'repo-card';
+                    c.style.cursor = 'pointer';
+                    c.innerHTML = `
+                        <div class="repo-title">
+                            <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
+                            ${r.name}
+                        </div>
+                        <div class="repo-desc">${r.desc}</div>
+                        <div class="repo-stats">
+                            <span><i class="lang-color" style="background:${r.color}"></i> ${r.lang}</span>
+                            <span><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path></svg> ${r.stars}</span>
+                            <span><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path></svg> ${r.fork}</span>
+                        </div>`;
+                    c.addEventListener('click', () => openRepoModal(i));
+                    vp.appendChild(c); repoCards.push(c);
+                });
+            } catch(e) { console.error("Total failure fetching repos", e); }
+        }
+        loadGithubRepos();
+            $('modal-repo-container').style.display = 'none';
+            $('modal-pdf-container').style.display = 'block';
+            $('modal-pdf-iframe').src = PROJECTS[i].pdf;
+            modalOverlay.style.display = 'flex';
+            setTimeout(() => modalOverlay.style.opacity = '1', 10);
+        }
+        
+        function openRepoModal(i) {
+            const r = REPOS[i];
+            $('modal-title').textContent = r.name;
+            $('modal-pdf-container').style.display = 'none';
+            $('modal-repo-container').style.display = 'flex';
+            
+            $('modal-repo-desc').textContent = r.desc;
+            $('modal-repo-github').href = r.url;
+            
+            const liveBtn = $('modal-repo-live');
+            if (r.liveUrl && r.liveUrl !== '') {
+                let url = r.liveUrl;
+                if(!url.startsWith('http')) url = 'https://' + url;
+                liveBtn.style.display = 'block';
+                liveBtn.href = url;
+            } else {
+                liveBtn.style.display = 'none';
+            }
+            
+            modalOverlay.style.display = 'flex';
+            setTimeout(() => modalOverlay.style.opacity = '1', 10);
+        }
+
+        $('modal-close').addEventListener('click', () => {
+            modalOverlay.style.opacity = '0';
+            setTimeout(() => {
+                modalOverlay.style.display = 'none';
+                $('modal-pdf-iframe').src = '';
+            }, 400);
+        });
+                        </div>`;
+                    c.addEventListener('click', () => openRepoModal(i));
+                    vp.appendChild(c); repoCards.push(c);
+                });
+        function openRepoModal(i) {
+            const r = REPOS[i];
+            $('modal-title').textContent = r.name;
+            $('modal-pdf-container').style.display = 'none';
+        function openRepoModal(i) {
+            const r = REPOS[i];
+            $('modal-title').textContent = r.name;
+            $('modal-pdf-container').style.display = 'none';
+            $('modal-repo-container').style.display = 'flex';
+            
+            const liveBtn = $('modal-repo-live');
+            let fullLiveUrl = '';
+            if (r.liveUrl && r.liveUrl !== '') {
+                fullLiveUrl = r.liveUrl;
+                if(!fullLiveUrl.startsWith('http')) fullLiveUrl = 'https://' + fullLiveUrl;
+                liveBtn.style.display = 'block';
+                liveBtn.href = fullLiveUrl;
+            } else {
+            // Set image: take a screenshot of the live site if it exists, otherwise fallback to GitHub's card
+            const img = $('modal-repo-img');
+            img.style.display = 'block';
+            
+            if (fullLiveUrl) {
+                // Use microlink.io for much faster and SPA-compatible screenshots
+                img.src = `https://api.microlink.io?url=${encodeURIComponent(fullLiveUrl)}&screenshot=true&meta=false&embed=screenshot.url`;
+            } else {
+                img.src = `https://opengraph.githubassets.com/1/LiashRoy/${r.name}`;
+            }
+            } else {
+                img.src = `https://opengraph.githubassets.com/1/LiashRoy/${r.name}`;
+            }
+            
+            // If the screenshot fails to load, use a generic placeholder
+            img.onerror = function() { 
+                this.onerror = null; // prevent infinite loop
+                this.src = 'https://placehold.co/600x300/1a1a1d/58a6ff?text=' + encodeURIComponent(r.name) + '&font=monospace'; 
+            };
+
+            $('modal-repo-desc').textContent = r.desc;
+            $('modal-repo-github').href = r.url;
+            
+            modalOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function openRepoModal(i) {
+            const r = REPOS[i];
+            $('modal-title').textContent = r.name;
+            $('modal-pdf-container').style.display = 'none';
+            $('modal-repo-container').style.display = 'flex';
+            
+            $('modal-repo-desc').textContent = r.desc;
+            $('modal-repo-github').href = r.url;
+            
+            const liveBtn = $('modal-repo-live');
+            if (r.liveUrl && r.liveUrl !== '') {
+                let url = r.liveUrl;
+                if(!url.startsWith('http')) url = 'https://' + url;
+                liveBtn.style.display = 'block';
+                liveBtn.href = url;
+            } else {
+                liveBtn.style.display = 'none';
+            }
+            
+            modalOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        // =============== RENDER LOOP ===============
+        let target = window.scrollY || 0;
+        let cur = target;
+
+        function render() {
+        function closeModal() { 
+            modalOverlay.classList.remove('open'); 
+            document.body.style.overflow = ''; 
+            setTimeout(() => { $('modal-pdf-iframe').src = ''; }, 400); 
+        }
+            const p = PROJECTS[i];
+            // 1. Laptop Lid Open (0 to 1800)
+            if (s <= PHASES.LAPTOP.end) {
+                const p = prog(s, PHASES.LAPTOP.start, PHASES.LAPTOP.end);
+                const angle = p * -115; // 0 (closed) to -115 (open)
+                laptopLid.style.transform = `rotateX(${angle}deg) translateZ(8px)`;
+                
+                // Screen content fades in as it opens
+                const op = prog(s, 400, 1200);
+                    const op=Math.max(.15,1-Math.abs(off)*.55);
+                    c.style.transform=`translateX(${tx}%) scale(${sc})`;
+                    c.style.opacity=op;
+                    c.style.zIndex=NUM_PROJECTS-Math.round(Math.abs(off));
+                });
+                const ai=Math.round(Math.min(fi,NUM_PROJECTS-1));
+                indicators.forEach((d,i)=>d.classList.toggle('active',i===ai));
+            }
+
+            /* ---- GITHUB ---- */
+            if (s >= PHASES.FADE_GH.start && s <= PHASES.FADE_2.end) {
+                let go=1, gt='';
+                if (s <= PHASES.FADE_GH.end) {
+                    const fi = prog(s, PHASES.FADE_GH.start, PHASES.FADE_GH.end);
+                    go=fi; gt=`scale(${.96+fi*.04}) translateY(${(1-fi)*28}px)`;
+                } else if (s > PHASES.FADE_2.start) {
+                    const fo = prog(s, PHASES.FADE_2.start, PHASES.FADE_2.end);
+                    go=1-fo; gt=`scale(${1-fo*.04})`;
+                }
+                show(sections.github, go, gt);
+
+                const gp = prog(s, PHASES.GITHUB.start, PHASES.GITHUB.end);
+                const gi = gp * (REPOS.length - 1);
+                repoCards.forEach((c,i) => {
+                    const off=i-gi, tx=off*115;
+                    const sc=Math.max(.78,1-Math.abs(off)*.12);
+                    const op=Math.max(.15,1-Math.abs(off)*.55);
+                    c.style.transform=`translateX(${tx}%) scale(${sc})`;
+                    c.style.opacity=op;
+                    c.style.zIndex=REPOS.length-Math.round(Math.abs(off));
+                });
+            }
+            if (s >= PHASES.FADE_GH.start && s <= PHASES.FADE_2.end) {
+                let go=1, gt='';
+                if (s <= PHASES.FADE_GH.end) {
+                    const fi = prog(s, PHASES.FADE_GH.start, PHASES.FADE_GH.end);
+                    go=fi; gt=`scale(${.96+fi*.04}) translateY(${(1-fi)*28}px)`;
+                } else if (s > PHASES.FADE_2.start) {
+                    const fo = prog(s, PHASES.FADE_2.start, PHASES.FADE_2.end);
+                    go=1-fo; gt=`scale(${1-fo*.04})`;
+                }
+                show(sections.github, go, gt);
+
+                const gp = prog(s, PHASES.GITHUB.start, PHASES.GITHUB.end);
+                const gi = gp * (REPOS.length - 1);
+                repoCards.forEach((c,i) => {
+                    const off=i-gi, tx=off*115;
+                    const sc=Math.max(.78,1-Math.abs(off)*.12);
+                    const op=Math.max(.15,1-Math.abs(off)*.55);
+                    const bl=Math.min(Math.abs(off)*2.5,5);
+                    c.style.transform=`translateX(${tx}%) scale(${sc})`;
+                    c.style.opacity=op; c.style.filter=`blur(${bl}px)`;
+                    c.style.zIndex=REPOS.length-Math.round(Math.abs(off));
+                });
+            }
+                const lidP = Math.min(lp / 0.72, 1);
+                const lidAngle = lerp(0, 130, lidP);
+                laptopLid.style.transform = 'rotateX(' + lidAngle + 'deg)';
+
+                // Keyboard glow from screen light
+                const glP = prog(lp, 0.50, 0.78);
+                kbGlow.style.opacity = glP * 0.40;
+
+                // Shadow changes as lid opens
+        // =============== NAV ===============
+        const NAV_TARGETS = [0, 3100, 6700, 8300];
+
+                // Screen overlay (name/links)
+                const cp = prog(lp, 0.62, 0.82);
+                screenOverlay.style.opacity = cp;
+                screenOverlay.style.transform = `translate(-50%,-50%) scale(${0.92+cp*0.08})`;
+                screenOverlay.style.pointerEvents = cp > 0.5 ? 'auto' : 'none';
+                if (cp > 0.01) screenOverlay.classList.add('visible');
+                else screenOverlay.classList.remove('visible');
+
+                // Section opacity (fades out during FADE_1)
+                let lo = 1, lt = '';
+                if (s > PHASES.FADE_1.start) {
+                    const fo = prog(s, PHASES.FADE_1.start, PHASES.FADE_1.end);
+                    lo = 1 - fo;
+                    lt = `scale(${1-fo*0.04}) translateY(${-fo*35}px)`;
+                }
+                show(sections.laptop, lo, lt);
+                setNav(0);
+            }
+
+            /* ---- PROJECTS ---- */
+            if (s >= PHASES.FADE_1.start && s <= PHASES.FADE_2.end) {
+                let po=1, pt='';
+                if (s <= PHASES.FADE_1.end) {
+                    const fi = prog(s, PHASES.FADE_1.start, PHASES.FADE_1.end);
+                    po=fi; pt=`scale(${.96+fi*.04}) translateY(${(1-fi)*28}px)`;
+                } else if (s > PHASES.FADE_2.start) {
+                    const fo = prog(s, PHASES.FADE_2.start, PHASES.FADE_2.end);
+                    po=1-fo; pt=`scale(${1-fo*.04})`;
+                }
+                show(sections.projects, po, pt);
+
+                const pp = prog(s, PHASES.PROJECTS.start, PHASES.PROJECTS.end);
+                const fi = pp * (NUM_PROJECTS - 1);
+                projectCards.forEach((c,i) => {
+                    const off=i-fi, tx=off*115;
+                    const sc=Math.max(.78,1-Math.abs(off)*.12);
+                    const op=Math.max(.15,1-Math.abs(off)*.55);
+                    const bl=Math.min(Math.abs(off)*2.5,5);
+                    c.style.transform=`translateX(${tx}%) scale(${sc})`;
+                    c.style.opacity=op; c.style.filter=`blur(${bl}px)`;
+                    c.style.zIndex=NUM_PROJECTS-Math.round(Math.abs(off));
+                });
+                const ai=Math.round(Math.min(fi,NUM_PROJECTS-1));
+                indicators.forEach((d,i)=>d.classList.toggle('active',i===ai));
+                if (s > PHASES.FADE_1.end) setNav(1);
+            }
+
+            /* ---- EDUCATION ---- */
+            if (s >= PHASES.FADE_2.start && s <= PHASES.FADE_3.end) {
+                let eo=1, et='';
+                if (s <= PHASES.FADE_2.end) {
+                    const fi=prog(s,PHASES.FADE_2.start,PHASES.FADE_2.end);
+                    eo=fi; et=`translateY(${(1-fi)*28}px)`;
+                } else if (s > PHASES.FADE_3.start) {
+                    const fo=prog(s,PHASES.FADE_3.start,PHASES.FADE_3.end);
+                    eo=1-fo; et=`scale(${1-fo*.04})`;
+                }
+                show(sections.education, eo, et);
+                if (s > PHASES.FADE_2.end) setNav(2);
+            }
+
+            /* ---- CONTACT ---- */
+            if (s >= PHASES.FADE_3.start) {
+                let co=1, ct='';
+                if (s <= PHASES.FADE_3.end) {
+                    const fi=prog(s,PHASES.FADE_3.start,PHASES.FADE_3.end);
+                    co=fi; ct=`translateY(${(1-fi)*28}px)`;
+                }
+                show(sections.contact, co, ct);
+                if (s > PHASES.FADE_3.end) setNav(3);
+            }
+
+            requestAnimationFrame(render);
+        }
+
+        // =============== SCROLL ===============
+        window.addEventListener('scroll', () => { target = window.scrollY; }, { passive: true });
+
+        // =============== INIT ===============
+        show(sections.laptop, 1);
+        laptopLid.style.transform = 'rotateX(0deg)';
+        requestAnimationFrame(render);
+    })();
+    </script>
+</body>
+</html>
