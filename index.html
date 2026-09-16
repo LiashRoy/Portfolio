@@ -1612,27 +1612,12 @@
         async function loadGithubRepos() {
             const vp = $('github-viewport');
             try {
-                let pinnedData = [];
-                try {
-                    // Primary: egoist pinned repos API
-                    const pRes = await fetch('https://gh-pinned-repos.egoist.dev/?username=LiashRoy');
-                    if (pRes.ok) pinnedData = await pRes.json();
-                    else throw new Error('Primary API not ok');
-                } catch(err) {
-                    try {
-                        // Secondary: pinned.github.io API
-                        const pRes2 = await fetch('https://pinned.github.io/api/user/LiashRoy');
-                        if (pRes2.ok) pinnedData = await pRes2.json();
-                        else throw new Error('Secondary API not ok');
-                    } catch(err2) {
-                        console.warn("Pinned APIs failed, using exact fallback order:", err2);
-                        // Hardcoded fallback exactly matching user's pinned dashboard order
-                        pinnedData = [
-                            {repo: 'whitequest-credflow'}, {repo: 'tranchechain'}, {repo: 'yt-music-sorter'},
-                            {repo: 'cred-fintech-clone'}, {repo: 'Vivo-MRA-Dashboard-'}
-                        ];
-                    }
-                }
+                // Hardcoded to match user's exact pinned selection
+                const pinnedData = [
+                    {repo: 'whitequest-credflow'}, {repo: 'tranchechain'}, 
+                    {repo: 'cred-fintech-clone'}, {repo: 'Vivo-MRA-Dashboard-'},
+                    {repo: 'grayquest-risk-demo'}, {repo: 'pm-dashboard'}
+                ];
 
                 // Fetch full details from GitHub to get homepage (live link)
                 const fullData = await Promise.all(pinnedData.map(async (p) => {
