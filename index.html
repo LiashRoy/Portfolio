@@ -996,6 +996,90 @@
 
     <div class="site-logo" id="site-logo" style="position: fixed; top: 30px; right: 40px; width: 65px; height: 65px; background: url('logo.jpg') center/cover no-repeat; border-radius: 50%; border: 2px solid rgba(0, 242, 254, 0.8); box-shadow: 0 0 15px rgba(0, 242, 254, 0.5), inset 0 0 10px rgba(0, 242, 254, 0.2); z-index: 1000; opacity: 0; animation: fadeInLogo 2s ease forwards 1s;"></div>
     <style>@keyframes fadeInLogo { to { opacity: 0.9; } }</style>
+
+    <!-- ===== FLOATING GLASS NAVBAR ===== -->
+    <nav id="glass-nav" class="glass-nav">
+        <a href="#" data-section="home" class="glass-nav-link active">Home</a>
+        <a href="#" data-section="about" class="glass-nav-link">About</a>
+        <a href="#" data-section="experience" class="glass-nav-link">Experience</a>
+        <a href="#" data-section="projects" class="glass-nav-link">Projects</a>
+        <a href="#" data-section="certifications" class="glass-nav-link">Certifications</a>
+        <a href="#" data-section="github" class="glass-nav-link">GitHub</a>
+        <a href="#" data-section="education" class="glass-nav-link">Education</a>
+        <a href="#" data-section="contact" class="glass-nav-link">Contact</a>
+        <div class="glass-nav-indicator" id="glass-nav-indicator"></div>
+    </nav>
+    <style>
+        .glass-nav {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            border-radius: 50px;
+            /* Liquid glass effect */
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px) saturate(1.6);
+            -webkit-backdrop-filter: blur(20px) saturate(1.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 4px 30px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            animation: navSlideIn 0.8s ease forwards 1.5s;
+        }
+        @keyframes navSlideIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .glass-nav-link {
+            position: relative;
+            z-index: 2;
+            padding: 7px 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            color: rgba(255, 255, 255, 0.45);
+            text-decoration: none;
+            border-radius: 40px;
+            transition: color 0.35s ease;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .glass-nav-link:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .glass-nav-link.active {
+            color: #fff;
+        }
+        /* Sliding pill indicator behind active link */
+        .glass-nav-indicator {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: calc(100% - 12px);
+            transform: translateY(-50%);
+            border-radius: 40px;
+            background: rgba(0, 242, 254, 0.12);
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.15), inset 0 0 8px rgba(0, 242, 254, 0.05);
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+            pointer-events: none;
+        }
+        /* Hide on very small screens */
+        @media (max-width: 768px) {
+            .glass-nav {
+                display: none;
+            }
+        }
+    </style>
     
     <!-- ===== NEON BACKGROUND CANVAS ===== -->
     <canvas id="wave-canvas"></canvas>
@@ -1678,6 +1762,87 @@
             } catch(e) { console.error("Total failure fetching repos", e); }
         }
         loadGithubRepos();
+
+        // =============== GLASS NAVBAR ===============
+        (function() {
+            const navLinks = document.querySelectorAll('.glass-nav-link');
+            const indicator = document.getElementById('glass-nav-indicator');
+            let currentActive = 'home';
+
+            // Map nav data-section names to scroll pixel ranges (midpoints of each section)
+            const NAV_SECTIONS = [
+                { name: 'home',           start: 0,     end: 2800  },
+                { name: 'about',          start: 2800,  end: 6200  },
+                { name: 'experience',     start: 6200,  end: 8300  },
+                { name: 'projects',       start: 8300,  end: 13000 },
+                { name: 'certifications', start: 13000, end: 18100 },
+                { name: 'github',         start: 18100, end: 22300 },
+                { name: 'education',      start: 22300, end: 27500 },
+                { name: 'contact',        start: 27500, end: 29000 },
+            ];
+
+            // Scroll target for click navigation
+            const NAV_SCROLL_TARGETS = {
+                home: 0,
+                about: 3300,
+                experience: 7000,
+                projects: 9500,
+                certifications: 14500,
+                github: 19500,
+                education: 23500,
+                contact: 28000
+            };
+
+            function moveIndicator(link) {
+                if (!link || !indicator) return;
+                const navRect = link.parentElement.getBoundingClientRect();
+                const linkRect = link.getBoundingClientRect();
+                indicator.style.left = (linkRect.left - navRect.left) + 'px';
+                indicator.style.width = linkRect.width + 'px';
+            }
+
+            function updateActiveNav() {
+                const s = window.scrollY;
+                let activeName = 'home';
+                for (const sec of NAV_SECTIONS) {
+                    if (s >= sec.start) activeName = sec.name;
+                }
+                if (activeName !== currentActive) {
+                    currentActive = activeName;
+                    navLinks.forEach(l => {
+                        l.classList.toggle('active', l.dataset.section === activeName);
+                        if (l.dataset.section === activeName) moveIndicator(l);
+                    });
+                }
+            }
+
+            // Initial indicator position after animation completes
+            setTimeout(() => {
+                const activeLink = document.querySelector('.glass-nav-link.active');
+                moveIndicator(activeLink);
+            }, 2400);
+
+            // Update on scroll (piggyback on existing rAF loop)
+            const origRender = window._navRenderHook;
+            window.addEventListener('scroll', updateActiveNav, { passive: true });
+
+            // Click to scroll
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = NAV_SCROLL_TARGETS[link.dataset.section];
+                    if (target !== undefined) {
+                        window.scrollTo({ top: target, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Re-position indicator on resize
+            window.addEventListener('resize', () => {
+                const activeLink = document.querySelector('.glass-nav-link.active');
+                moveIndicator(activeLink);
+            });
+        })();
 
         // =============== MODAL ===============
         window.openModalWithPdf = function(e, title, pdfSrc) {
